@@ -4,11 +4,12 @@ Created on Sat Apr  1 07:33:08 2023
 
 @author: Local User
 """
+from datetime import datetime, timedelta
 
 import pandas as pd 
-from datetime import datetime, timedelta
 import pytz
 import numpy as np
+import statsapi
 
 def convert_odds(odds, second_odds = None):
     
@@ -178,3 +179,10 @@ def Return_Prediction(Home_Team, Away_Team):
     return print(f"Prediction: {Most_Frequent_Prediction}, Theo Odds: {Theoretical_Odds}, Implied Probability: {round(Prediction_Frequency * 100, 2)}%")
 
 Return_Prediction(Home_Team = 'Houston Astros', Away_Team = 'Chicago White Sox')
+
+Schedule = statsapi.schedule(start_date = datetime.today().strftime("%Y-%m-%d"), end_date = datetime.today().strftime("%Y-%m-%d"))
+
+for game in Schedule:
+    
+    Return_Prediction(Home_Team = game['home_name'], Away_Team = game['away_name'])
+
