@@ -8,4 +8,4 @@
 
 ``` Return_Prediction(Home_Team = "Houston Astros", Away_Team = "Chicago White Sox") ```
 
-The betting methodology for ***how*** and ***when*** to bet is here:
+The betting methodology for ***how*** and ***when*** to bet can be found here: [The Quant's Playbook](https://quantgalore.substack.com/)
