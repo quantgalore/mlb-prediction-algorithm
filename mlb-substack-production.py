@@ -178,11 +178,14 @@ def Return_Prediction(Home_Team, Away_Team):
     
     return print(f"Prediction: {Most_Frequent_Prediction}, Theo Odds: {Theoretical_Odds}, Implied Probability: {round(Prediction_Frequency * 100, 2)}%")
 
-Return_Prediction(Home_Team = 'Houston Astros', Away_Team = 'Chicago White Sox')
+# Return_Prediction(Home_Team = 'Houston Astros', Away_Team = 'Chicago White Sox')
 
 Schedule = statsapi.schedule(start_date = datetime.today().strftime("%Y-%m-%d"), end_date = datetime.today().strftime("%Y-%m-%d"))
 
 for game in Schedule:
     
-    Return_Prediction(Home_Team = game['home_name'], Away_Team = game['away_name'])
-
+    try:
+    
+        Return_Prediction(Home_Team = game['home_name'], Away_Team = game['away_name'])
+    except:
+        continue
