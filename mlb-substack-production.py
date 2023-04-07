@@ -10,6 +10,7 @@ import pandas as pd
 import pytz
 import numpy as np
 import statsapi
+import requests
 
 def convert_odds(odds, second_odds = None):
     
