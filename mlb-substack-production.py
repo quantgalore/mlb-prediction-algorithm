@@ -180,12 +180,83 @@ def Return_Prediction(Home_Team, Away_Team):
 
 # Return_Prediction(Home_Team = 'Houston Astros', Away_Team = 'Chicago White Sox')
 
+def Prediction_Via_MLB(team_a, team_b):
+    
+    
+    prediction_list = []
+    
+    years = [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+    
+    for year in years:
+        
+        # Specify the season year you want to retrieve data for
+        season_year = year
+        
+        # Make a GET request to the MLB Stats API
+        response = requests.get(f"https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season={season_year}")
+    
+        data = response.json()
+        team_names = []
+        run_differentials = []
+        for division in data["records"]:
+            for team in division["teamRecords"]:
+                team_name = team['team']['name']
+                
+                if team_name == "Florida Marlins":
+                    team_name = "Miami Marlins"
+                    
+                elif team_name == "Tampa Bay Devil Rays":
+                    team_name = "Tampa Bay Rays"
+                    
+                elif team_name == "Cleveland Indians":
+                    team_name = "Cleveland Guardians"
+                    
+                elif team_name == "Anaheim Angels":
+                    team_name = "Los Angeles Angels"
+                    
+                elif team_name == "Montreal Expos":
+                    team_name = "Washington Nationals"
+                
+                run_differential = team['runDifferential']
+                team_names.append(team_name)
+                run_differentials.append(run_differential)
+        
+        df = pd.concat([pd.Series(team_names, name="Team Name"), pd.Series(run_differentials, name="Run Differential")], axis=1)
+        
+        matchup = df[(df['Team Name'] == team_a) | (df['Team Name'] == team_b)]
+        
+        prediction = matchup['Team Name'][matchup['Run Differential'] == matchup['Run Differential'].max()].iloc[0]
+        prediction_list.append(prediction)
+
+    prediction_dataframe = pd.DataFrame(prediction_list)
+    implied_probability = len(prediction_dataframe[prediction_dataframe[0] == prediction_dataframe.mode().iloc[0].iloc[0]]) / len(prediction_dataframe)
+    
+    return f"Prediction: {prediction} Implied Probability: {round(implied_probability*100, 2)} 2023 Prediction: {prediction_dataframe[0].iloc[-1]}"
+
 Schedule = statsapi.schedule(start_date = datetime.today().strftime("%Y-%m-%d"), end_date = datetime.today().strftime("%Y-%m-%d"))
+
+Classic_Prediction_List = []
+MLB_Prediction_List = []
 
 for game in Schedule:
     
-    try:
     
-        Return_Prediction(Home_Team = game['home_name'], Away_Team = game['away_name'])
-    except:
-        continue
+    Classic_Prediction =  Return_Prediction(Home_Team = game['home_name'], Away_Team = game['away_name'])
+    MLB_Prediction = Prediction_Via_MLB(team_a = game['home_name'], team_b = game['away_name'])
+    
+    Classic_Prediction_List.append(Classic_Prediction)
+    MLB_Prediction_List.append(MLB_Prediction)
+
+    print("Working...")
+    
+###
+    
+print("Classic Picks:")
+
+for classic_pick in Classic_Prediction_List:
+    print(classic_pick)
+    
+print("\nNewer Picks:")
+
+for newer_pick in MLB_Prediction_List:
+    print(newer_pick)
